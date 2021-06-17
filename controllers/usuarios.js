@@ -7,13 +7,32 @@ const { generarJWT } = require('../helpers/jwt');
 
 /*Controladores de usuarios*/
 const getUser= async(req,res)=>{
-  const usuarios = await Usuario.find({},);
-  const user = await Usuario.findById(req.id);
+
+  //tomo un dato que puede o no venir desde laurl como query (generalmente luego del ?) si no viene le pongo 0
+  const desde = Number(req.query.desde) || 0;
+
+  //para hacer una paginacion se debe indicar desde que valor iniciar y cuantos poner, por ejemplo desde= 5 limit = 10
+  //seria desde el objeto 5 traeme 10
+
+  /*El codigo desde aqui es ineficiente, ya que tenemos 3 await  de manera consecutiva y significa que va uno luego el otroy asi,
+  para solucionar esto se puede usar un arreglo de promesas
+  const usuarios = await Usuario.find({},'nombre email role google')
+                                .skip(desde)    
+                                .limit(5);
+  const cantUser = await Usuario.count();
+  const user = await Usuario.findById(req.id);*/
+
+  const [usuarios, cantUser, user]= await Promise.all([
+    Usuario.find({},'nombre email role google img').skip(desde).limit(10),
+    Usuario.countDocuments(),
+    Usuario.findById(req.id)
+  ]);
 
   res.json({
     ok:true,
     usuarios,
-    Usuario: user.nombre
+    Usuario: user.nombre,
+    Cantidad: cantUser
   })
 
 }
