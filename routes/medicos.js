@@ -20,7 +20,19 @@ router.post(
 );
 router.get('/',[],obtenerMedicos);
 
-router.put('/:id',[],editarMedico);
+router.put(
+  '/:id',
+  [
+    validarJWT,
+    check('nombre','El nombre es obligatorio').not().isEmpty(),
+    check('hospital','El ID no es de mongo').isMongoId(),
+    validarCampos
+  ]
+  ,editarMedico
+);
+
+
+
 router.delete('/:id',[],eliminarMedico);
 
 

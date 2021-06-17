@@ -19,8 +19,23 @@ router.post(
   ],
   crearHospital
 );
-router.put('/:id',[],editarHospital);
-router.delete('/:id',[],borrarHospital);
+
+router.put(
+  '/:id',
+  [
+    validarJWT,
+    check('nombre','El nombre del hospital es obligatorio').not().isEmpty(),
+    validarCampos
+  ],
+  editarHospital);
+
+
+router.delete(
+  '/:id',
+  [
+    validarJWT
+  ],
+  borrarHospital);
 
 
 

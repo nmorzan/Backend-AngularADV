@@ -7,10 +7,13 @@ const router = Router();
 //expres validator
 const {check} = require('express-validator')
 //controladores
-const { login,googleSignIn } =require('../controllers/auth');
+const { login,googleSignIn,renewToken } =require('../controllers/auth');
+const { validarJWT } = require('../middlewares/vaidar-jwt');
 const { validarCampos } = require('../middlewares/validar-campos');
 
 //rutas
+
+//login comun
 router.post('/',
     [
       check('email','El email debe ingresarse de manera correcta').isEmail(),
@@ -19,7 +22,7 @@ router.post('/',
     ]
     ,login
 );
-
+//login con google
 router.post('/google',
     [
       check('token','El token de google es obligatorio').not().isEmpty(),
@@ -27,4 +30,12 @@ router.post('/google',
     ]
     ,googleSignIn
 );
+
+//refresh token de usuario
+router.get('/renew',
+    [
+      validarJWT
+    ],
+    renewToken);
+
 module.exports = router;

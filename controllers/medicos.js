@@ -54,10 +54,28 @@ const obtenerMedicos = async(req,res=response)=>{
 };
 
 const editarMedico = async(req,res=response)=>{
+    const medicoID = req.params.id;
+    const usuario = req.id;
+
+
   try{
+    const medicoBD = await Medico.findById(medicoID);
+    if(!medicoBD){
+      res.status(400).json({
+        ok:false,
+        msg:"No se encuentra un medico con ese ID"
+      });
+    }
+    const medicoUpdates = {
+      ...req.body,
+      usuario: usuario
+    }
+
+    const medicoNew = await Medico.findByIdAndUpdate(medicoID, medicoUpdates, {new:true})
+
     res.status(200).json({
       ok:true,
-      msg:"Hola desde editarMedico"
+      medicoNew
     });
 
   }catch(error){
@@ -69,18 +87,30 @@ const editarMedico = async(req,res=response)=>{
 };
 
 const eliminarMedico = async(req,res=response)=>{
-  try{
-    res.status(200).json({
-      ok:true,
-      msg:"Hola desde eliminarMedico"
-    });
+  const medicoID = req.params.id;
 
-  }catch(error){
-    res.status(500).json({
+try{
+  const medicoBD = await Medico.findById(medicoID);
+  if(!medicoBD){
+    res.status(400).json({
       ok:false,
-      msg:"Ah ocurrido un error inesperado"
+      msg:"No se encuentra un medico con ese ID"
     });
   }
+
+  await Medico.findByIdAndDelete(medicoID);
+
+  res.status(200).json({
+    ok:true,
+    msg:"Medico eliminado"
+  });
+
+}catch(error){
+  res.status(500).json({
+    ok:false,
+    msg:"Ah ocurrido un error inesperado"
+  });
+}
 };
 
 

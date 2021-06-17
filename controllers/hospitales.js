@@ -1,6 +1,6 @@
 const { response } = require('express');
-const HospitalSchema  = require('../models/hospital');
-const Hospital = HospitalSchema;
+const Hospital  = require('../models/hospital');
+
 
 
 const obtenerHospital = async(req,res=response)=>{
@@ -45,10 +45,32 @@ const crearHospital = async(req,res=response)=>{
 }
 
 const editarHospital = async(req,res=response)=>{
+  const id = req.id;
+  const hospitalID = req.params.id;
+
   try{
+
+    const hospitalBD = await Hospital.findById(hospitalID);
+    //verifico que exista
+    if(!hospitalBD){
+      res.status(400).json({
+        ok:false,
+        msg:"no se ha podido encontrar el hospital con ese ID"
+      });
+    }
+    //si existe, desestructuro la informacion del hospital
+
+    const updateHospital = {
+      ...req.body,
+      usuario: id
+    }
+
+   const hospitalAct = await Hospital.findByIdAndUpdate(hospitalID, updateHospital , { new: true});
+
+
     res.status(200).json({
       ok: true,
-      msg:"Hola desde editar hospitales"
+      hospitalAct
     });
   }catch(error){
     res.status(500).json({
@@ -60,10 +82,24 @@ const editarHospital = async(req,res=response)=>{
 }
 
 const borrarHospital = async(req,res=response)=>{
+  
+  const hospitalID = req.params.id;
+  
   try{
+    const hospitalDB = await Hospital.findById(hospitalID);
+
+    if(!hospitalDB){
+      res.status(400).json({
+        ok:false,
+        msg:"Ese id no es de ningun hospital de la BDD"
+      });
+    }
+
+    await Hospital.findByIdAndDelete(hospitalID);
+
     res.status(200).json({
       ok: true,
-      msg:"Hola desde borrar hospitales"
+      msg:"Hospital eliminado"
     });
   }catch(error){
     res.status(500).json({
