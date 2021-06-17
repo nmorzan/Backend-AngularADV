@@ -1,8 +1,8 @@
-const  UsuarioSchema  = require('../models/usuario');
-const Usuario = UsuarioSchema;
+const  Usuario  = require('../models/usuario');
 
 const bcrypt = require('bcryptjs');
 const { generarJWT } = require('../helpers/jwt');
+const { googleVerify } = require('../helpers/google-verify');
 
 const login = async(req,res)=>{
   const { password, email} = req.body;
@@ -24,7 +24,7 @@ const login = async(req,res)=>{
       res.status(404).json({
         ok:false,
         msg:"Contraseña incorrecta"
-      })
+      });
     }
 
 
@@ -45,6 +45,55 @@ const login = async(req,res)=>{
   }
 }
 
+
+const googleSignIn= async(req,res)=>{
+  const googleToken = req.body.token;
+  let usuario;
+  try{
+      const {name, email, picture} = await googleVerify(googleToken);
+
+      //busco el usuario con el mail
+      const usuarioDB = await Usuario.findOne({email});
+
+     if(!usuarioDB){
+        //si el usuario no esta creado lo creo
+          usuario = new Usuario({
+          nombre: name,
+          email: email,
+          img: picture,
+          password: '@@@',
+          google: true
+        });
+      }else{
+        //si esta creado actualizo google
+        usuario = usuarioDB;
+        usuario.google=true
+      }
+
+      //guardo el usuario nuevo o actualizo el que esta
+      await usuario.save()
+
+      //genero el token de acceso con Google id porq la contraseña se la asigne arriba 
+      //(si no le asigno nada a la contraseña tendra doble acceso)
+
+          //generar token de validadcion
+    const token = await generarJWT(usuario._id);
+      
+      res.status(200).json({
+      ok:true,
+      usuario,
+      token
+    });
+
+  }catch(error){
+    res.status(401).json({
+    ok:false,
+    msg:"El token no es valido"
+    });
+  }
+} 
+
 module.exports ={
-  login
+  login,
+  googleSignIn
 }
