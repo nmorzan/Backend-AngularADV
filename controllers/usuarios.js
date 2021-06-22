@@ -63,9 +63,14 @@ const crearUser= async (req,res)=>{  //creo una funcion async que me permita esp
 
     //generacion del token para el usuario 
     const token= await generarJWT(usuario._id);
-    res.json({
+    res.status(200).json({
+      //para no devolver asi los usuarios, ver como lo hizo el profesor dentro del schema
       status: "ok",
-      usuario,
+      email: usuario.email,
+      google: usuario.google,
+      nombre: usuario.nombre,
+      role: usuario.role,
+      id:usuario.id,
       token: token
     })
   }catch(error){
