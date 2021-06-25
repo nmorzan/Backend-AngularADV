@@ -11,7 +11,7 @@ const fileUpload = require('express-fileupload');
 router.use(fileUpload());
 
 router.put('/:tipo/:id',[validarJWT], uploadImg);
-router.get('/:tipo/:foto',[validarJWT], verFoto);
+router.get('/:tipo/:foto', verFoto);
 
 
 

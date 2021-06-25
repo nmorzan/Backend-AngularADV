@@ -101,6 +101,13 @@ const actualizarUsuario= async(req,res)=>{
     //tomo los datos que el usuario envia y los desestructuro, google y password no se van a leer en la variable campos
     const {google, password,...campos} = req.body;
 
+    //miro si el usuario esta logueado con google, si lo esta, no permito que cambie datos
+    if(usuarioDB.google){
+      return res.status(400).json({
+        ok:false,
+        msg:"No se pueden modificar datos de google"
+      });
+    }
     //analizo si el email que el usuario mando es igual al del usuario
     if (usuarioDB.email === campos.email){
       delete campos.email;
@@ -114,6 +121,8 @@ const actualizarUsuario= async(req,res)=>{
         });
       };
     }
+
+
 
     const usuario = await Usuario.findByIdAndUpdate(id, campos, {new: true});
 
