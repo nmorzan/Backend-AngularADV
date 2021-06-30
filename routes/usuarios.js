@@ -29,7 +29,8 @@ router.put('/:id',
       [
         validarJWT,
         check('nombre','El nombre debe ser cargado').not().isEmpty(),
-        check('role','El role debe ser cargado').not().isEmpty(),
+       // check('role','El role debe ser cargado').not().isEmpty(), se quito la opcion de que el role sea una condicion necesaria
+       //para actualizar un usuario
         check('email','El email debe ser cargado').isEmail(),
         validarCampos
       ]
