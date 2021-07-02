@@ -1,7 +1,9 @@
 /* Importo modelo de usuario*/
 const UsuarioSchema = require('../models/usuario');
 const Usuario = UsuarioSchema;
+//encriptacion de contraseña
 const bcrypt = require('bcryptjs');
+//generacion de JWT
 const { generarJWT } = require('../helpers/jwt');
 
 

@@ -32,10 +32,6 @@ router.post('/google',
 );
 
 //refresh token de usuario
-router.get('/renew',
-    [
-      validarJWT
-    ],
-    renewToken);
+router.get('/renew',[validarJWT],renewToken);
 
 module.exports = router;
