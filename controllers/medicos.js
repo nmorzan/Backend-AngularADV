@@ -2,6 +2,8 @@ const { response } =require('express')
 
 const Medico = require('../models/medicos');
 const Hospital = require('../models/hospital');
+const usuario = require('../models/usuario');
+const hospital = require('../models/hospital');
 
 
 const crearMedico = async(req,res=response)=>{
@@ -33,8 +35,6 @@ const crearMedico = async(req,res=response)=>{
 };
 
 const obtenerMedicos = async(req,res=response)=>{
-
-
   try{
     const medicosDB = await Medico.find({},)
                                   .populate('usuario', 'nombre img')
@@ -52,6 +52,25 @@ const obtenerMedicos = async(req,res=response)=>{
     });
   }
 };
+
+const getMedicoById = async(req,res)=>{
+  const id = req.params.id;
+
+  try {
+
+    const medicoBD = await Medico.findById(id).populate('usuario', 'nombre img').populate('hospital', 'nombre img');
+    res.status(200).json({
+      ok:true,
+      medico:medicoBD
+    })
+  } catch (error) {
+    res.status(500).json({
+      ok:false,
+      msg:'Por favor comuniquese con el administrador'
+    })
+  }
+}
+
 
 const editarMedico = async(req,res=response)=>{
     const medicoID = req.params.id;
@@ -118,5 +137,6 @@ module.exports = {
   crearMedico,
   obtenerMedicos,
   editarMedico,
-  eliminarMedico
+  eliminarMedico,
+  getMedicoById
 }
